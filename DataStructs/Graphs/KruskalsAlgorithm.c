@@ -1,59 +1,64 @@
 #include <stdio.h>
+#define MAX 100
+int graph[MAX][MAX];
+int parent[MAX];
 
-void Kruskal(int n, int e, int edges[3][e]) {
-    int parent[n];
-    for(int i = 0; i < n; i++) {
+int find(int i) {
+    while (parent[i] != i)
+        i = parent[i];
+    return i;
+}
+
+void union1(int i, int j) {
+    int a = find(i);
+    int b = find(j);
+    parent[a] = b;
+}
+
+void kruskal(int n) {
+    int mincost = 0; // Cost of min MST.
+    for (int i = 0; i < n; i++)
         parent[i] = i;
-    }
 
-    for (int i = 0; i < e; i++) {
-        for (int j = 0; j < e - i - 1; j++) {
-            if (edges[2][j] > edges[2][j + 1]) {
-                int temp = edges[2][j];
-                edges[2][j] = edges[2][j + 1];
-                edges[2][j + 1] = temp;
-
-                temp = edges[0][j];
-                edges[0][j] = edges[0][j + 1];
-                edges[0][j + 1] = temp;
-
-                temp = edges[1][j];
-                edges[1][j] = edges[1][j + 1];
-                edges[1][j + 1] = temp;
+    int edge_count = 0;
+    while (edge_count < n - 1) {
+        int min = 9999, a = -1, b = -1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (find(i) != find(j) && graph[i][j] < min && graph[i][j] != 0) {
+                    min = graph[i][j];
+                    a = i;
+                    b = j;
+                }
             }
         }
+
+        if (a == -1 || b == -1) {
+            printf("No spanning tree\n");
+            return;
+        }
+
+        union1(a, b);
+        printf("%d-%d %d\n", a, b, min);
+        edge_count++;
+        mincost += min;
     }
-
-    for (int i = 0; i < e; i++) {
-        int u = edges[0][i];
-        int v = edges[1][i];
-        int w = edges[2][i];
-
-        while(parent[u] != u) {
-            u = parent[u];
-        }
-
-        while(parent[v] != v) {
-            v = parent[v];
-        }
-
-        if(u != v) {
-            printf("%d-%d %d\n", edges[0][i], edges[1][i], edges[2][i]);
-            parent[v] = u;
-        }
-    }
+    printf("Minimum cost: %d\n", mincost);
 }
 
 int main() {
-    int n, e;
-    scanf("%d %d", &n, &e);
-    n++;
+    int n, m, u, v, w;
 
-    int edges[3][e];
-    for(int i = 0; i < e; i++) {
-        scanf("%d %d %d", &edges[0][i], &edges[1][i], &edges[2][i]);
+    scanf("%d", &n);
+    scanf("%d", &m);
+
+    for (int i = 0; i < m; i++) {
+        scanf("%d %d %d", &u, &v, &w);
+        graph[u][v] = w;
+        graph[v][u] = w;
     }
 
-    Kruskal(n, e, edges);
+    kruskal(n);
+
     return 0;
 }

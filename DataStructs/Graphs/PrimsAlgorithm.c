@@ -1,7 +1,9 @@
 #include <stdio.h>
+#define MAX_SIZE 100
+int graph[MAX_SIZE][MAX_SIZE];
+int visited[MAX_SIZE], parent[MAX_SIZE], key[MAX_SIZE];
 
-void Prims(int n, int graph[n][n], int start) {
-    int visited[n], parent[n], key[n];
+void Prims(int n, int start) {
     for(int i = 0; i < n; i++) {
         visited[i] = 0;
         parent[i] = -1;
@@ -27,26 +29,21 @@ void Prims(int n, int graph[n][n], int start) {
         }
     }
 
+    int minCost = 0;
     for(int i = 0; i < n; i++) {
-        if (parent[i] != -1)
+        if (parent[i] != -1) {
             printf("%d-%d %d\n", parent[i], i, key[i]);
+            minCost += key[i];
+        }
     }
+    printf("Minimum cost: %d\n", minCost);
 }
 
 int main() {
     int n, e, start;
-    scanf("%d %d", &n, &e);
-    n++;
+    scanf("%d", &n);
+    scanf("%d", &e);
 
-    // Adjacency matrix
-    int graph[n][n];
-    for(int i = 0; i < n; i++) {
-        for(int j = 0; j < n; j++) {
-            graph[i][j] = 0;
-        }
-    }
-
-    // Edge list
     for(int i = 0; i < e; i++) {
         int u, v, w;
         scanf("%d %d %d", &u, &v, &w);
@@ -54,9 +51,8 @@ int main() {
         graph[v][u] = w;
     }
 
-    // Start vertex
     scanf("%d", &start);
 
-    Prims(n, graph, start);
+    Prims(n, start);
     return 0;
 }
