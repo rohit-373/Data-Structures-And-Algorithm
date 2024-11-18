@@ -1,57 +1,64 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define MAX_SIZE 20
+int arr[MAX_SIZE];
 
-typedef struct Node {
+typedef struct Node{
     int data;
-    struct Node *left;
-    struct Node *right;
-} Node;
+    struct Node* left;
+    struct Node* right;
+}Node;
 
-Node* createNode(int data) {
-    Node* newNode = malloc(sizeof(Node));
-    newNode->data = data;
-    newNode->left = NULL;
-    newNode->right = NULL;
-    return newNode;
+Node* createNode(int data){
+    Node* n = (Node*)malloc(sizeof(Node*));;
+    n->data = data;
+    n->left = NULL;
+    n->right = NULL;
+    return n;
 }
 
-void zigZagTraversal(Node* root) {
-    if (root == NULL)
-        return;
-    Node* queue[100];
+Node* createTree(Node* root, int n, int i) {
+    if (i < n) {
+        root = createNode(arr[i]);
+        root->left = createTree(root->left, n, 2*i+1);
+        root->right = createTree(root->right, n, 2*i+2);
+    }
+    return root;
+}
+
+void levelOrder(Node* root, int n) {
+    Node* queue[n];
     int front = 0, rear = 0;
     queue[rear++] = root;
-    int swap = 1;
+    int flag = 1;
     while (front < rear) {
-        int size = rear - front;
+        int size = rear-front;
+        int row[size];
         for (int i = 0; i < size; i++) {
-            Node* current = queue[front++];
-            if (swap) {
-                if (current->left != NULL)
-                    queue[rear++] = current->left;
-                if (current->right != NULL)
-                    queue[rear++] = current->right;
-            } else {
-                if (current->right != NULL)
-                    queue[rear++] = current->right;
-                if (current->left != NULL)
-                    queue[rear++] = current->left;
-            }
-            printf("%d ", current->data);
+            Node* curr = queue[front++];
+            int index = flag ? i : (size-1-i);
+            row[index] = curr->data;
+            if (curr->left != NULL)
+                queue[rear++] = curr->left;
+            if (curr->right != NULL)
+                queue[rear++] = curr->right;
+            
         }
+        for (int i = 0; i < size; i++) 
+            printf("%d ", row[i]);
         printf("\n");
-        swap = !swap;
+        flag = !flag;
     }
 }
 
 int main() {
-    Node* root = createNode(1);
-    root->left = createNode(2);
-    root->right = createNode(3);
-    root->left->left = createNode(7);
-    root->left->right = createNode(6);
-    root->right->left = createNode(5);
-    root->right->right = createNode(4);
-    zigZagTraversal(root);
+    int n;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+    Node* root = NULL;
+    root = createTree(root, n, 0);
+    levelOrder(root, n);
     return 0;
 }

@@ -4,9 +4,9 @@ int graph[MAX][MAX];
 int parent[MAX];
 
 int find(int i) {
-    while (parent[i] != i)
-        i = parent[i];
-    return i;
+    if (parent[i] == -1)
+        return i;
+    return find(parent[i]);
 }
 
 void union1(int i, int j) {
@@ -18,7 +18,7 @@ void union1(int i, int j) {
 void kruskal(int n) {
     int mincost = 0; // Cost of min MST.
     for (int i = 0; i < n; i++)
-        parent[i] = i;
+        parent[i] = -1;
 
     int edge_count = 0;
     while (edge_count < n - 1) {
@@ -33,7 +33,7 @@ void kruskal(int n) {
             }
         }
 
-        if (a == -1 || b == -1) {
+        if (a == -1 && b == -1) {
             printf("No spanning tree\n");
             return;
         }
